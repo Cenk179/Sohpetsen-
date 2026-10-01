@@ -15,18 +15,20 @@ jobs:
         run: |
           unzip -o SohpetSen_v2.5.zip -d build_project
 
+      - name: WebRTC bağımlılığını güncelle
+        working-directory: build_project
+        run: |
+          sed -i 's/org\.webrtc:google-webrtc:1\.0\.32006/com.infobip:google-webrtc:1.0.48246t/g' app/build.gradle.kts
+
       - name: JDK 17 kur
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Gradle kur
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: APK oluştur
+      - name: Gradle ile APK oluştur
         working-directory: build_project
-        run: gradle assembleDebug
+        run: gradle assembleDebug --stacktrace
 
       - name: APK'yı yükle
         uses: actions/upload-artifact@v4
