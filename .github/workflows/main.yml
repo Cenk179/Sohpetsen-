@@ -8,29 +8,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Projeyi al
+      - name: GitHub reposunu al
         uses: actions/checkout@v4
 
-      - name: ZIP dosyasını aç
+      - name: SohpetSen ZIP dosyasını aç
         run: |
+          rm -rf build_project
+          mkdir build_project
           unzip -o SohpetSen_v2.5.zip -d build_project
 
-      - name: WebRTC bağımlılığını güncelle
+      - name: WebRTC bağımlılığını düzelt
         working-directory: build_project
         run: |
-          sed -i 's/org\.webrtc:google-webrtc:1\.0\.32006/com.infobip:google-webrtc:1.0.48246t/g' app/build.gradle.kts
+          sed -i 's#org\.webrtc:google-webrtc:1\.0\.32006#com.infobip:google-webrtc:1.0.48246t#g' app/build.gradle.kts
+          grep -n "webrtc" app/build.gradle.kts
 
-      - name: JDK 17 kur
+      - name: Java 17 kur
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
+      - name: Android SDK hazırla
+        uses: android-actions/setup-android@v3
+
       - name: Gradle ile APK oluştur
         working-directory: build_project
-        run: gradle assembleDebug --stacktrace
+        run: |
+          gradle assembleDebug --stacktrace
 
-      - name: APK'yı yükle
+      - name: APK dosyasını yükle
         uses: actions/upload-artifact@v4
         with:
           name: SohpetSen-APK
