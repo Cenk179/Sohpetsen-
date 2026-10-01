@@ -1,0 +1,35 @@
+name: SohpetSen Android Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Projeyi al
+        uses: actions/checkout@v4
+
+      - name: ZIP dosyasını aç
+        run: |
+          unzip -o SohpetSen_v2.5.zip -d build_project
+
+      - name: JDK 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle kur
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: APK oluştur
+        working-directory: build_project
+        run: gradle assembleDebug
+
+      - name: APK'yı yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: SohpetSen-APK
+          path: build_project/app/build/outputs/apk/debug/*.apk
